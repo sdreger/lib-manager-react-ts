@@ -11,54 +11,30 @@ import {
     Image,
     MantineColorScheme,
     Menu,
-    Select,
     useMantineColorScheme
 } from "@mantine/core";
 import {IconSettings, IconSortAscendingShapes, IconSunMoon} from '@tabler/icons-react';
 import bookShelfLogo from '/bookshelf.svg'
 import {useState} from "react";
-
-type OrderType = "id,asc" | "id,desc" | "title,asc" | "title,desc" | "subtitle,asc" | "subtitle,desc" |
-    "created_at,asc" | "created_at,desc" | "updated_at,asc" | "updated_at,desc";
-
-type OrderItem = {
-    value: OrderType;
-    label: string;
-};
+import {SortSelect, SortType} from "@/components/SortSelect/SortSelect";
 
 export function Root() {
     const [mobileOpened, {toggle: toggleMobile}] = useDisclosure();
     const [desktopOpened, {toggle: toggleDesktop}] = useDisclosure(true);
     const [settingsMenuOpened, setSettingsMenuOpened] = useState(false);
     const [colorSchemeValue, setColorSchemeValue] = useState("auto")
-    const [orderByValue, setOrderByValue] = useState("updated_at,desc")
+    const [orderByValue, setOrderByValue] = useState("updated_at,desc" as SortType);
     const {setColorScheme} = useMantineColorScheme();
 
     const menuIconSize = 18;
-
-    const sortItems: OrderItem[] = [
-        {value: "id,asc", label: "Book ID ↓"},
-        {value: "id,desc", label: "Book ID ↑"},
-        {value: "title,asc", label: "Title ↓"},
-        {value: "title,desc", label: "Title ↑"},
-        {value: "subtitle,asc", label: "Subtitle ↓"},
-        {value: "subtitle,desc", label: "Subtitle ↑"},
-        {value: "created_at,asc", label: "Created ↓"},
-        {value: "created_at,desc", label: "Created ↑"},
-        {value: "updated_at,asc", label: "Updated ↓"},
-        {value: "updated_at,desc", label: "Updated ↑"},
-    ];
 
     function handleColorSchemeChange(val: string) {
         setColorScheme(val as MantineColorScheme);
         setColorSchemeValue(val);
     }
 
-    function handleOrderChange(val: string | null) {
-        if (val !== null) {
-            setOrderByValue(val);
-            setSettingsMenuOpened(false);
-        }
+    function handleOrderChange(val: SortType) {
+        setOrderByValue(val);
     }
 
     return (
@@ -95,12 +71,7 @@ export function Root() {
                                 <Menu.Dropdown>
                                     <Menu.Label>Settings</Menu.Label>
                                     <Menu.Item leftSection={<IconSortAscendingShapes size={menuIconSize}/>}>
-                                        <Select
-                                            defaultValue="{orderByValue}"
-                                            value={orderByValue}
-                                            data={sortItems}
-                                            onChange={handleOrderChange}
-                                        />
+                                        <SortSelect value={orderByValue as SortType} onChange={handleOrderChange}/>
                                     </Menu.Item>
                                     <Menu.Label>Color Scheme</Menu.Label>
                                     <Button.Group m="xs">
