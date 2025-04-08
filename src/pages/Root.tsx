@@ -6,6 +6,7 @@ import {
     Autocomplete,
     Avatar,
     Burger,
+    Button,
     Group,
     Image,
     MantineColorScheme,
@@ -25,11 +26,6 @@ type OrderItem = {
     label: string;
 };
 
-type ColorSchemeItem = {
-    value: MantineColorScheme;
-    label: string;
-};
-
 export function Root() {
     const [mobileOpened, {toggle: toggleMobile}] = useDisclosure();
     const [desktopOpened, {toggle: toggleDesktop}] = useDisclosure(true);
@@ -39,12 +35,6 @@ export function Root() {
     const {setColorScheme} = useMantineColorScheme();
 
     const menuIconSize = 18;
-
-    const colorSchemeSelectValues: ColorSchemeItem[] = [
-        {value: "auto", label: "Auto"},
-        {value: "light", label: "Light"},
-        {value: "dark", label: "Dark"},
-    ];
 
     const sortItems: OrderItem[] = [
         {value: "id,asc", label: "Book ID ↓"},
@@ -59,12 +49,9 @@ export function Root() {
         {value: "updated_at,desc", label: "Updated ↑"},
     ];
 
-    function handleColorSchemeToggle(val: string | null) {
-        if (val !== null) {
-            setColorScheme(val as MantineColorScheme);
-            setColorSchemeValue(val);
-            setSettingsMenuOpened(false);
-        }
+    function handleColorSchemeChange(val: string) {
+        setColorScheme(val as MantineColorScheme);
+        setColorSchemeValue(val);
     }
 
     function handleOrderChange(val: string | null) {
@@ -97,7 +84,8 @@ export function Root() {
                                 clearable
                                 w={130}
                                 placeholder="Search..."/>
-                            <Menu shadow="md" width={200} opened={settingsMenuOpened} onDismiss={() => setSettingsMenuOpened(false)}>
+                            <Menu shadow="md" width={270} opened={settingsMenuOpened}
+                                  onDismiss={() => setSettingsMenuOpened(false)}>
                                 <Menu.Target>
                                     <ActionIcon variant="filled" aria-label="Settings"
                                                 onClick={() => setSettingsMenuOpened(!settingsMenuOpened)}>
@@ -114,14 +102,17 @@ export function Root() {
                                             onChange={handleOrderChange}
                                         />
                                     </Menu.Item>
-                                    <Menu.Item leftSection={<IconSunMoon size={menuIconSize}/>}>
-                                        <Select
-                                            defaultValue={colorSchemeValue}
-                                            data={colorSchemeSelectValues}
-                                            value={colorSchemeValue}
-                                            onChange={handleColorSchemeToggle}
-                                        />
-                                    </Menu.Item>
+                                    <Menu.Label>Color Scheme</Menu.Label>
+                                    <Button.Group m="xs">
+                                        <IconSunMoon style={{margin: '10 10 10 0'}} size={menuIconSize}/>
+                                        <Button variant={colorSchemeValue === 'auto' ? 'filled' : 'default'}
+                                                onClick={() => handleColorSchemeChange("auto")}>Auto</Button>
+                                        <Button variant={colorSchemeValue === 'light' ? 'filled' : 'default'}
+                                                onClick={() => handleColorSchemeChange("light")}>Light</Button>
+                                        <Button variant={colorSchemeValue === 'dark' ? 'filled' : 'default'}
+                                                onClick={() => handleColorSchemeChange("dark")}>Dark</Button>
+                                    </Button.Group>
+
                                 </Menu.Dropdown>
                             </Menu>
                             <Avatar color="cyan" radius="xl">SD</Avatar>
