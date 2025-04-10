@@ -35,6 +35,7 @@ export const SortSelect = (props: SortSelectProps) => {
 
     return (
         <Select
+            checkIconPosition="right"
             defaultValue="{orderByValue}"
             value={props.value}
             data={sortItems}
