@@ -3,7 +3,6 @@ import {useDisclosure} from "@mantine/hooks";
 import {
     ActionIcon,
     AppShell,
-    Autocomplete,
     Avatar,
     Burger,
     Button,
@@ -13,17 +12,15 @@ import {
     Menu,
     useMantineColorScheme
 } from "@mantine/core";
-import {IconSettings, IconSortAscendingShapes, IconSunMoon} from '@tabler/icons-react';
+import {IconSettings, IconSunMoon} from '@tabler/icons-react';
 import bookShelfLogo from '/bookshelf.svg'
 import {useState} from "react";
-import {SortSelect, SortType} from "@/components/SortSelect/SortSelect";
 
 export function Root() {
     const [mobileOpened, {toggle: toggleMobile}] = useDisclosure();
     const [desktopOpened, {toggle: toggleDesktop}] = useDisclosure(true);
     const [settingsMenuOpened, setSettingsMenuOpened] = useState(false);
     const [colorSchemeValue, setColorSchemeValue] = useState("auto")
-    const [orderByValue, setOrderByValue] = useState("updated_at,desc" as SortType);
     const {setColorScheme} = useMantineColorScheme();
 
     const menuIconSize = 18;
@@ -33,13 +30,9 @@ export function Root() {
         setColorSchemeValue(val);
     }
 
-    function handleOrderChange(val: SortType) {
-        setOrderByValue(val);
-    }
-
     return (
         <AppShell
-            header={{height: 60}}
+            header={{height: 50}}
             navbar={{
                 width: 300,
                 breakpoint: 'xs',
@@ -56,10 +49,6 @@ export function Root() {
                         <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm"/>
                         <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm"/>
                         <Group ml="xl" gap={10}>
-                            <Autocomplete
-                                clearable
-                                w={130}
-                                placeholder="Search..."/>
                             <Menu shadow="md" width={270} opened={settingsMenuOpened}
                                   onDismiss={() => setSettingsMenuOpened(false)}>
                                 <Menu.Target>
@@ -69,10 +58,6 @@ export function Root() {
                                     </ActionIcon>
                                 </Menu.Target>
                                 <Menu.Dropdown>
-                                    <Menu.Label>Settings</Menu.Label>
-                                    <Menu.Item leftSection={<IconSortAscendingShapes size={menuIconSize}/>}>
-                                        <SortSelect value={orderByValue as SortType} onChange={handleOrderChange}/>
-                                    </Menu.Item>
                                     <Menu.Label>Color Scheme</Menu.Label>
                                     <Button.Group m="xs">
                                         <IconSunMoon style={{margin: '10 10 10 0'}} size={menuIconSize}/>
