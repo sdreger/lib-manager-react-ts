@@ -42,7 +42,7 @@ export const BookList = (props: BookListProps) => {
                         <Indicator position="top-center" offset={0} size={20} zIndex={0} color="blue"
                                    label={pubDate}>
                             <Link to={`/books/${book.id}`}>
-                                <Image mt="15" src={coverUrl} alt="book cover" h={200} fit="contain"/>
+                                <Image mt="15" src={coverUrl} alt="book cover" h={220} fit="contain"/>
                             </Link>
                         </Indicator>
                         {book.edition > 1 && <Indicator position="top-center"
@@ -51,14 +51,14 @@ export const BookList = (props: BookListProps) => {
                         </Indicator>}
                     </Card.Section>
                 </Tooltip>
-                <Group justify="space-between" mt="md" mb="xs">
+                <Group justify="space-between" mt="xs" mb="xs">
                     <Text lineClamp={2} h={50}>{book.title}</Text>
                 </Group>
                 <Group>
                     <Badge color="indigo" variant="light">{book.pages} pages</Badge>
                     <Badge color="cyan" variant="light">{bookFileSize} Mb</Badge>
                 </Group>
-                <Group my='10'>
+                <Group mt='10'>
                     {book.fileTypes.length > 0 && (
                         book.fileTypes.map((fileType: string) => (
                             <Badge color="green" variant="outline" radius="3" p="5" mx="-3">{fileType}</Badge>
@@ -74,7 +74,7 @@ export const BookList = (props: BookListProps) => {
             <SimpleGrid
                 cols={{base: 1, sm: 2, md: 3, lg: 4, xl: 5}}
                 spacing={{base: 'xs', sm: 'md'}}
-                verticalSpacing={{base: 'xs', sm: 'md'}}
+                verticalSpacing={{base: 'xs', sm: 'sm'}}
             >
                 {books}
             </SimpleGrid>

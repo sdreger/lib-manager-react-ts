@@ -1,16 +1,13 @@
-import bookShelfLogo from '/bookshelf.svg'
-import './App.css'
+import '@mantine/core/styles.css';
+import {MantineProvider} from '@mantine/core';
+import {theme} from './theme';
+import {Notifications} from '@mantine/notifications';
+import '@mantine/notifications/styles.css';
 
-function App() {
-
-  return (
-    <>
-      <div>
-          <img src={bookShelfLogo} className="logo" alt="Bookshelf logo" />
-      </div>
-      <h1>Personal Library Manager</h1>
-    </>
-  )
+export default function App() {
+    return (
+        <MantineProvider theme={theme}>
+            <Notifications />
+        </MantineProvider>
+    );
 }
-
-export default App
