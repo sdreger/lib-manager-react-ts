@@ -1,4 +1,5 @@
 import {AppShell, Center, Loader} from "@mantine/core";
+import {notifications} from '@mantine/notifications';
 import {useEffect, useState} from "react";
 import {BookSearchFilters, BookSearchNavbar} from "@/components/BookSearchNavbar/BookSearchNavbar";
 import {BookList, BookListItem} from "@/components/BookList/BookList";
@@ -51,7 +52,19 @@ function handleError(title: string, error: ApiErrorsResponse) {
     const message = error.errors.map((err: ApiErrorResponse): string => {
         return err.message
     }).join(",")
-    console.error(title, message);
+    console.error(message);
+    showErrorNotification(title, message);
+}
+
+function showErrorNotification(title: string, message: string): void {
+    notifications.show({
+        color: 'red',
+        message: message,
+        title: title,
+        position: "bottom-right",
+        autoClose: 5000,
+        withBorder: true
+    })
 }
 
 function createRequestOptions(): RequestInit {

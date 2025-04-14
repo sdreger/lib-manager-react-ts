@@ -61,7 +61,9 @@ export const BookList = (props: BookListProps) => {
                 <Group mt='10'>
                     {book.fileTypes.length > 0 && (
                         book.fileTypes.map((fileType: string) => (
-                            <Badge color="green" variant="outline" radius="3" p="5" mx="-3">{fileType}</Badge>
+                            <Badge key={fileType} color="green" variant="outline" radius="3" p="5" mx="-3">
+                                {fileType}
+                            </Badge>
                         ))
                     )}
                 </Group>
