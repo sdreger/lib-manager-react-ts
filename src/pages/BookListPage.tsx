@@ -1,4 +1,4 @@
-import {AppShell, Center, Loader} from "@mantine/core";
+import {AppShell, Center, Loader, Pagination} from "@mantine/core";
 import {notifications} from '@mantine/notifications';
 import {useEffect, useState} from "react";
 import {BookSearchFilters, BookSearchNavbar} from "@/components/BookSearchNavbar/BookSearchNavbar";
@@ -83,6 +83,7 @@ export function BookListPage() {
     });
     const [books, setBooks] = useState<BookLookupItem[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(1);
+    const [totalBooks, setTotalBooks] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
@@ -102,12 +103,13 @@ export function BookListPage() {
                         return book;
                     }));
                     setCurrentPage(json.data.page);
+                    setTotalBooks(json.data.total_pages);
                     setLoading(false);
                 } catch (err: any) {
                     console.error(err);
                 }
             }
-        fetchBooks(currentPage, pageSize, bookSearchFilters.orderBy, bookSearchFilters.searchTerm);
+        void fetchBooks(currentPage, pageSize, bookSearchFilters.orderBy, bookSearchFilters.searchTerm);
     }, [currentPage, bookSearchFilters]);
 
     function handleBookSearchFiltersChange(val: BookSearchFilters) {
@@ -125,7 +127,7 @@ export function BookListPage() {
             bookFileSize: bookLookupItem.book_file_size,
             coverFileName: bookLookupItem.cover_file_name,
             publisher: bookLookupItem.publisher,
-            fileTypes: ["pdf", "epub", "mobi", "zip"], // TODO: map to real values
+            fileTypes: ["pdf", "epub", "mobi", "zip"],
         };
     })
 
@@ -133,7 +135,21 @@ export function BookListPage() {
         <>
             <BookSearchNavbar onFiltersChange={handleBookSearchFiltersChange}/>
             <AppShell.Main>
-                {loading ? <Center my="xl"><Loader color="blue"/></Center> : <BookList books={bookList}/>}
+                {loading ?
+                    <Center my="xl"><Loader color="blue"/></Center>
+                    : <>
+                        <BookList books={bookList}/>
+                        <Center mt="md">
+                            <Pagination visibleFrom="md" boundaries={2} siblings={2}
+                                        onChange={setCurrentPage} total={totalBooks} value={currentPage}/>
+                            <Pagination hiddenFrom="md" visibleFrom="sm" boundaries={1}
+                                        onChange={setCurrentPage} total={totalBooks} value={currentPage}/>
+                            <Pagination hiddenFrom="sm" boundaries={1} siblings={0}
+                                        onChange={setCurrentPage} total={totalBooks} value={currentPage}/>
+                        </Center>
+                    </>
+                }
+
             </AppShell.Main>
         </>
     );
