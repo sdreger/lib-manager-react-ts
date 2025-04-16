@@ -24,16 +24,25 @@ type BookLookupItem = {
     tag_ids: number[];
 }
 
-type BookLookupResponseData = {
+type FileTypeItem = {
+    id: number;
+    name: string;
+}
+
+type ResponsePage<T> = {
     page: number;
     size: number;
     total_pages: number;
     total_elements: number;
-    content: BookLookupItem[]
+    content: T[]
 }
 
 type BookLookupResponse = {
-    data: BookLookupResponseData
+    data: ResponsePage<BookLookupItem>
+}
+
+type FileTypesResponse = {
+    data: ResponsePage<FileTypeItem>
 }
 
 type ApiErrorResponse = {
@@ -46,7 +55,10 @@ type ApiErrorsResponse = {
 }
 
 const bookApiUrl: string = `${import.meta.env.VITE_API_URL}/v1/books`
-const pageSize: number = 10;
+const fileTypesApiUrl: string = `${import.meta.env.VITE_API_URL}/v1/file_types`
+const bookListPageSize: number = 10;
+const fileTypeListPageSize: number = 100;
+const firstApiPage: number = 1;
 
 function handleError(title: string, error: ApiErrorsResponse) {
     const message = error.errors.map((err: ApiErrorResponse): string => {
@@ -82,9 +94,32 @@ export function BookListPage() {
         searchTerm: ""
     });
     const [books, setBooks] = useState<BookLookupItem[]>([]);
-    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [currentPage, setCurrentPage] = useState<number>(firstApiPage);
     const [totalBooks, setTotalBooks] = useState<number>(0);
+    const [fileTypes, setFileTypes] = useState<Map<number, string>>(new Map());
     const [loading, setLoading] = useState<boolean>(true);
+
+    useEffect(() => {
+        const fetchFileTypes = async (page: number, pageSize: number): Promise<void> => {
+            try {
+                const query: string = `?page=${page}&size=${pageSize}`;
+                const response: Response = await fetch(`${fileTypesApiUrl}${query}`, createRequestOptions());
+                if (response.status >= 400) {
+                    handleError("File types fetch error", await response.json() as ApiErrorsResponse)
+                    return;
+                }
+
+                const json: FileTypesResponse = await response.json();
+                const fileTypes: Map<number, string> =
+                    new Map(json.data.content.map((item: { id: number, name: string }) => [item.id, item.name]));
+                setFileTypes(fileTypes);
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        void fetchFileTypes(firstApiPage, fileTypeListPageSize);
+    }, []);
 
     useEffect(() => {
         const fetchBooks =
@@ -104,19 +139,23 @@ export function BookListPage() {
                     }));
                     setCurrentPage(json.data.page);
                     setTotalBooks(json.data.total_pages);
-                    setLoading(false);
                 } catch (err: any) {
                     console.error(err);
+                } finally {
+                    setLoading(false);
                 }
             }
-        void fetchBooks(currentPage, pageSize, bookSearchFilters.orderBy, bookSearchFilters.searchTerm);
+
+        void fetchBooks(currentPage, bookListPageSize, bookSearchFilters.orderBy, bookSearchFilters.searchTerm);
     }, [currentPage, bookSearchFilters]);
 
     function handleBookSearchFiltersChange(val: BookSearchFilters) {
         setBookSearchFilters(val);
+        setCurrentPage(firstApiPage);
     }
 
     const bookList: BookListItem[] = books.map((bookLookupItem: BookLookupItem): BookListItem => {
+
         return {
             id: bookLookupItem.id,
             title: bookLookupItem.title,
@@ -127,7 +166,13 @@ export function BookListPage() {
             bookFileSize: bookLookupItem.book_file_size,
             coverFileName: bookLookupItem.cover_file_name,
             publisher: bookLookupItem.publisher,
-            fileTypes: ["pdf", "epub", "mobi", "zip"],
+            fileTypes: bookLookupItem.file_type_ids.reduce((result: string[], fileTypeId: number): string[] => {
+                const fileTypeString: string | undefined = fileTypes.get(fileTypeId);
+                if (fileTypeString) {
+                    result.push(fileTypeString);
+                }
+                return result;
+            }, []),
         };
     })
 
