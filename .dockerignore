@@ -1,0 +1,8 @@
+README.md
+dist
+node_modules
+LICENSE
+.git
+.gitignore
+.DS_Store
+.idea
