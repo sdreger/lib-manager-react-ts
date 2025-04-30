@@ -1,10 +1,10 @@
 import {MatchersV3, PactV3} from '@pact-foundation/pact';
 import path from "path";
 import {describe, expect, it} from "vitest";
-import {BookService} from "@/service/BookService.ts";
+import {BookApi} from "@/api/BookApi.ts";
 import {datetime} from "@pact-foundation/pact/src/v3/matchers";
 
-const {eachLike, integer, string, regex} = MatchersV3;
+const {constrainedArrayLike, eachLike, integer, string, regex} = MatchersV3;
 
 const provider = new PactV3({
     dir: path.resolve(process.cwd(), 'pacts'),
@@ -18,7 +18,7 @@ const EXPECTED_BODY = {
         "size": integer(1),
         "total_pages": integer(8620),
         "total_elements": integer(8620),
-        "content": eachLike({
+        "content": constrainedArrayLike({
             "id": integer(1),
             "title": string("Azure AI Services at Scale for Cloud, Mobile, and Edge"),
             "subtitle": string("Building Intelligent Apps with Azure Cognitive Services and Machine Learning"),
@@ -36,7 +36,7 @@ const EXPECTED_BODY = {
             "category_ids": eachLike(integer(1), 1),
             "file_type_ids": eachLike(integer(1), 1),
             "tag_ids": eachLike(integer(1), 0),
-        }, 1)
+        }, 1, 1)
     }
 };
 
@@ -44,7 +44,7 @@ describe('GET /v1/books', () => {
     it('returns an HTTP 200 and a list of books', () => {
         provider
             .given('I have a list of books')
-            .uponReceiving('a request for all books')
+            .uponReceiving('a request for a page of books')
             .withRequest({
                 method: 'GET',
                 path: '/v1/books',
@@ -61,7 +61,7 @@ describe('GET /v1/books', () => {
             const pageNumber = 1;
             const pageSize = 1;
             const sortBy = 'updated_at,desc';
-            const bookAPI = new BookService(mockServer.url + '/v1/books');
+            const bookAPI = new BookApi(mockServer.url + '/v1/books');
             const query = '';
             const response = await bookAPI.getBooks(pageNumber, pageSize, sortBy, query);
 

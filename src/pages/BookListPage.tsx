@@ -3,7 +3,7 @@ import {notifications} from '@mantine/notifications';
 import {useEffect, useState} from "react";
 import {BookSearchFilters, BookSearchNavbar} from "@/components/BookSearchNavbar/BookSearchNavbar";
 import {BookList, BookListItem} from "@/components/BookList/BookList";
-import {BookService} from "@/service/BookService.ts";
+import {BookApi} from "@/api/BookApi.ts";
 
 type BookLookupItem = {
     id: number;
@@ -124,9 +124,9 @@ export function BookListPage() {
     useEffect(() => {
         const fetchBooks =
             async (currentPage: number, pageSize: number, sort: string, searchTerm: string): Promise<void> => {
-                const bookService = new BookService('/v1/books');
+                const bookApi = new BookApi('/v1/books');
                 try {
-                    const response: Response = await bookService.getBooks(currentPage, pageSize, sort, searchTerm);
+                    const response: Response = await bookApi.getBooks(currentPage, pageSize, sort, searchTerm);
                     if (response.status >= 400) {
                         handleError("Book list fetch error", await response.json() as ApiErrorsResponse)
                         return;

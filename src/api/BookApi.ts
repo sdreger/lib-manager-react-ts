@@ -1,6 +1,6 @@
 const bookApiUrl: string = `${import.meta.env.VITE_API_URL}/v1/books`
 
-export class BookService {
+export class BookApi {
     url: string;
 
     constructor(url: string) {
@@ -29,4 +29,4 @@ export class BookService {
     }
 }
 
-export default new BookService(bookApiUrl);
+export default new BookApi(bookApiUrl);
