@@ -7,7 +7,10 @@
     "dev": "vite --host",
     "build": "tsc && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@mantine/core": "^7.17.4",
