@@ -1,0 +1,46 @@
+name: Build and test
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+      - 'Makefile'
+      - deploy/**
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        node-version: [ '23.8.0' ]
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Download dependencies
+        run: npm install
+      - name: Build the code
+        run: npm run build
+      - name: Run tests
+        run: npm run test:run
+      - name: Add broker CA
+        env:
+          CA_SECRET: ${{ secrets.PACT_BROKER_CA }}
+        shell: bash
+        run: |
+          printf '%s' "${CA_SECRET}" > /etc/ssl/certs/pact-broker-ca.pem
+      - name: Publish Pact files
+        uses: pactflow/actions/publish-pact-files@v2
+        env:
+          PACT_DO_NOT_TRACK: true
+          SSL_CERT_FILE: /etc/ssl/certs/pact-broker-ca.pem
+        with:
+          pactfiles: pacts
+#          version: "1.2.3" # optional, defaults to git sha if not specified
+#          branch: main # optional, defaults to git branch if not specified
+          broker_url: ${{ vars.PACT_BROKER_BASE_URL }}
