@@ -7,7 +7,7 @@ on:
       - main
 
 env:
-  NEXT_TAG: 0.0.1
+  NEXT_TAG: 0.0.2
   REGISTRY: "gitea.dreger.lan"
   IMAGE_NAME: ${{ gitea.repository }}
 
@@ -51,7 +51,7 @@ jobs:
             --broker-base-url ${{ vars.PACT_BROKER_BASE_URL }} \
             --auto-detect-version-properties \
             --consumer-app-version ${{ env.NEXT_TAG }} \
-            --branch ${{ env.GITHUB_HEAD_REF }}
+            --branch ${{ env.GITHUB_BASE_REF }}
       - name: Create a new Git tag
         run: |
           git config --local user.email "actions@gitea.dreger.lan"
