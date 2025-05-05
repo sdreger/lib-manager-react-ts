@@ -33,14 +33,22 @@ jobs:
           CA_SECRET: ${{ secrets.PACT_BROKER_CA }}
         shell: bash
         run: |
-          printf '%s' "${CA_SECRET}" > /etc/ssl/certs/pact-broker-ca.pem
+          printf '%s' "${CA_SECRET}" > pact-broker-ca.pem
+        # Using Docker Run inside of Gitea Actions - https://gitea.com/gitea/act_runner/issues/189
+        # https://hub.docker.com/r/pactfoundation/pact-cli
       - name: Publish Pact files
-        uses: pactflow/actions/publish-pact-files@v2
-        env:
-          PACT_DO_NOT_TRACK: true
-          SSL_CERT_FILE: /etc/ssl/certs/pact-broker-ca.pem
+        uses: addnab/docker-run-action@v3
         with:
-          pactfiles: pacts
-#          version: "1.2.3" # optional, defaults to git sha if not specified
-#          branch: main # optional, defaults to git branch if not specified
-          broker_url: ${{ vars.PACT_BROKER_BASE_URL }}
+          image: pactfoundation/pact-cli:latest
+          options: >
+            --volumes-from=${{ env.JOB_CONTAINER_NAME }} 
+            -e PACT_DO_NOT_TRACK=true 
+            -e SSL_CERT_FILE=pact-broker-ca.pem
+          docker_network: gitea
+          run: |
+            cd ${{ gitea.workspace }}
+            pact publish pacts \
+            --broker-base-url ${{ vars.PACT_BROKER_BASE_URL }} \
+            --auto-detect-version-properties \
+            --consumer-app-version ${{ env.GITHUB_SHA }} \
+            --branch ${{ env.GITHUB_HEAD_REF }}
