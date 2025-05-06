@@ -29,4 +29,4 @@ export class BookApi {
     }
 }
 
-export default new BookApi(bookApiUrl);
+export default new BookApi(bookApiUrl) as BookApi;

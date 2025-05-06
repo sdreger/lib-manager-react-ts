@@ -41,7 +41,7 @@ export const BookList = (props: BookListProps) => {
                     <Card.Section>
                         <Indicator position="top-center" offset={0} size={20} zIndex={0} color="blue"
                                    label={pubDate}>
-                            <Link to={`/books/${book.id}`}>
+                            <Link to={`/book/${book.id}`}>
                                 <Image mt="15" src={coverUrl} alt="book cover" h={220} fit="contain"/>
                             </Link>
                         </Indicator>

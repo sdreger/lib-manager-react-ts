@@ -1,9 +1,10 @@
 import {AppShell, Center, Loader, Pagination} from "@mantine/core";
 import {notifications} from '@mantine/notifications';
 import {useEffect, useState} from "react";
+import {useNavigate, useParams} from "react-router";
 import {BookSearchFilters, BookSearchNavbar} from "@/components/BookSearchNavbar/BookSearchNavbar";
 import {BookList, BookListItem} from "@/components/BookList/BookList";
-import {BookApi} from "@/api/BookApi.ts";
+import BookApi from "@/api/BookApi.ts";
 
 type BookLookupItem = {
     id: number;
@@ -89,6 +90,7 @@ function createRequestOptions(): RequestInit {
 }
 
 export function BookListPage() {
+
     const [bookSearchFilters, setBookSearchFilters] = useState<BookSearchFilters>({
         orderBy: "updated_at,desc",
         searchTerm: ""
@@ -98,6 +100,13 @@ export function BookListPage() {
     const [totalBooks, setTotalBooks] = useState<number>(0);
     const [fileTypes, setFileTypes] = useState<Map<number, string>>(new Map());
     const [loading, setLoading] = useState<boolean>(true);
+    const navigate = useNavigate();
+    const params = useParams();
+
+    useEffect(() => {
+        const currentPageParam = params.page === undefined ? firstApiPage : parseInt(params.page);
+        setCurrentPage(currentPageParam);
+    }, [params]);
 
     useEffect(() => {
         const fetchFileTypes = async (page: number, pageSize: number): Promise<void> => {
@@ -124,9 +133,8 @@ export function BookListPage() {
     useEffect(() => {
         const fetchBooks =
             async (currentPage: number, pageSize: number, sort: string, searchTerm: string): Promise<void> => {
-                const bookApi = new BookApi('/v1/books');
                 try {
-                    const response: Response = await bookApi.getBooks(currentPage, pageSize, sort, searchTerm);
+                    const response: Response = await BookApi.getBooks(currentPage, pageSize, sort, searchTerm);
                     if (response.status >= 400) {
                         handleError("Book list fetch error", await response.json() as ApiErrorsResponse)
                         return;
@@ -137,7 +145,7 @@ export function BookListPage() {
                         book.pub_date = new Date(book.pub_date);
                         return book;
                     }));
-                    setCurrentPage(json.data.page);
+                    // setCurrentPage(json.data.page);
                     setTotalBooks(json.data.total_pages);
                 } catch (err: any) {
                     console.error(err);
@@ -149,9 +157,13 @@ export function BookListPage() {
         void fetchBooks(currentPage, bookListPageSize, bookSearchFilters.orderBy, bookSearchFilters.searchTerm);
     }, [currentPage, bookSearchFilters]);
 
-    function handleBookSearchFiltersChange(val: BookSearchFilters) {
+    function handleBookSearchFiltersChange(val: BookSearchFilters): void {
         setBookSearchFilters(val);
-        setCurrentPage(firstApiPage);
+        navigate(`/`);
+    }
+
+    function handlePageChange(page: number): void {
+        navigate(`/books/${page}`);
     }
 
     const bookList: BookListItem[] = books.map((bookLookupItem: BookLookupItem): BookListItem => {
@@ -185,12 +197,12 @@ export function BookListPage() {
                     : <>
                         <BookList books={bookList}/>
                         <Center mt="md">
-                            <Pagination visibleFrom="md" boundaries={2} siblings={2}
-                                        onChange={setCurrentPage} total={totalBooks} value={currentPage}/>
+                            <Pagination visibleFrom="md" boundaries={2} siblings={2} withEdges
+                                        onChange={handlePageChange} total={totalBooks} value={currentPage}/>
                             <Pagination hiddenFrom="md" visibleFrom="sm" boundaries={1}
-                                        onChange={setCurrentPage} total={totalBooks} value={currentPage}/>
+                                        onChange={handlePageChange} total={totalBooks} value={currentPage}/>
                             <Pagination hiddenFrom="sm" boundaries={1} siblings={0}
-                                        onChange={setCurrentPage} total={totalBooks} value={currentPage}/>
+                                        onChange={handlePageChange} total={totalBooks} value={currentPage}/>
                         </Center>
                     </>
                 }
