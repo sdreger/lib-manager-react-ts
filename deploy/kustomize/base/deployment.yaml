@@ -27,9 +27,6 @@ spec:
           volumeMounts:
             - mountPath: /tmp
               name: temp
-          envFrom:
-            - configMapRef:
-                name: lib-manager-react-ts
           ports:
             - name: http
               containerPort: 8080
