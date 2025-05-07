@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lib-manager-react-ts
+  annotations:
+    ignore-check.kube-linter.io/latest-tag: "the tag is set by the deployment system"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: lib-manager-react-ts
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: lib-manager-react-ts
+    spec:
+      containers:
+        - image: gitea.dreger.lan/sdreger/lib-manager-react-ts:latest
+          name: lib-manager-react-ts
+          imagePullPolicy: Always
+          securityContext:
+            runAsUser: 1001
+            runAsGroup: 1001
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+          volumeMounts:
+            - mountPath: /tmp
+              name: temp
+          envFrom:
+            - configMapRef:
+                name: lib-manager-react-ts
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources: {}
+      volumes:
+        - name: temp
+          emptyDir: {}
