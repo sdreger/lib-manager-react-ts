@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: lib-manager-react-ts
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: "domain.tld"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: lib-manager-react-ts
+                port:
+                  number: 8080
