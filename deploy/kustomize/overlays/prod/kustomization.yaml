@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: prod
+resources:
+  - ../../base
+components:
+  - ../../components/ingress-traefik
+patches:
+  - path: patch_resources.yaml
+  - target:
+      kind: Ingress
+      name: lib-manager-react-ts
+    patch: |-
+      - op: replace
+        path: /spec/rules/0/host
+        value: "lib-manager-react-ts.dreger.lan"
+      - op: add
+        path: /metadata/annotations/traefik.ingress.kubernetes.io~1router.entrypoints
+        value: "web"
+
+labels:
+  - pairs:
+      app: lib-manager-react-ts
+    includeSelectors: false
+replicas:
+  - count: 1
+    name: lib-manager-react-ts
