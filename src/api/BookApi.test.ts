@@ -66,6 +66,7 @@ describe('GET /v1/books', () => {
             const response = await bookAPI.getBooks(pageNumber, pageSize, sortBy, query);
 
             expect(response.status).eq(200);
+            // TODO: check fields
         });
     })
 })
