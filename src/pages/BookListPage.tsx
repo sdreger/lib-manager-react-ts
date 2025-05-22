@@ -5,6 +5,7 @@ import {useNavigate, useParams} from "react-router";
 import {BookSearchFilters, BookSearchNavbar} from "@/components/BookSearchNavbar/BookSearchNavbar";
 import {BookList, BookListItem} from "@/components/BookList/BookList";
 import BookApi from "@/api/BookApi.ts";
+import FileTypeApi from "@/api/FileTypeApi.ts";
 
 type BookLookupItem = {
     id: number;
@@ -56,7 +57,6 @@ type ApiErrorsResponse = {
     errors: ApiErrorResponse[];
 }
 
-const fileTypesApiUrl: string = `${import.meta.env.VITE_API_URL}/v1/file_types`
 const bookListPageSize: number = 10;
 const fileTypeListPageSize: number = 100;
 const firstApiPage: number = 1;
@@ -80,15 +80,6 @@ function showErrorNotification(title: string, message: string): void {
     })
 }
 
-function createRequestOptions(): RequestInit {
-    const headers: Headers = new Headers();
-    headers.set("Accept", "application/json");
-    return {
-        method: "GET",
-        headers: headers,
-    };
-}
-
 export function BookListPage() {
 
     const [bookSearchFilters, setBookSearchFilters] = useState<BookSearchFilters>({
@@ -109,25 +100,27 @@ export function BookListPage() {
     }, [params]);
 
     useEffect(() => {
-        const fetchFileTypes = async (page: number, pageSize: number): Promise<void> => {
-            try {
-                const query: string = `?page=${page}&size=${pageSize}`;
-                const response: Response = await fetch(`${fileTypesApiUrl}${query}`, createRequestOptions());
-                if (response.status >= 400) {
-                    handleError("File types fetch error", await response.json() as ApiErrorsResponse)
-                    return;
+        const fetchFileTypes =
+            async (currentPage: number, pageSize: number, sort: string): Promise<void> => {
+                try {
+                    const response: Response = await FileTypeApi.getFileTypes(currentPage, pageSize, sort);
+                    if (response.status >= 400) {
+                        handleError("File types fetch error", await response.json() as ApiErrorsResponse)
+                        return;
+                    }
+
+                    const json: FileTypesResponse = await response.json();
+                    const fileTypes: Map<number, string> =
+                        new Map(json.data.content.map(
+                            (item: { id: number, name: string }) => [item.id, item.name]
+                        ));
+                    setFileTypes(fileTypes);
+                } catch (err) {
+                    console.error(err);
                 }
-
-                const json: FileTypesResponse = await response.json();
-                const fileTypes: Map<number, string> =
-                    new Map(json.data.content.map((item: { id: number, name: string }) => [item.id, item.name]));
-                setFileTypes(fileTypes);
-            } catch (err) {
-                console.error(err);
             }
-        }
 
-        void fetchFileTypes(firstApiPage, fileTypeListPageSize);
+        void fetchFileTypes(firstApiPage, fileTypeListPageSize, "id,desc");
     }, []);
 
     useEffect(() => {
