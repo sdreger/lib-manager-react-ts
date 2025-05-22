@@ -82,20 +82,21 @@ function showErrorNotification(title: string, message: string): void {
 
 export function BookListPage() {
 
+    const params = useParams();
+    const currentPageParam = params.page === undefined ? firstApiPage : parseInt(params.page);
+
     const [bookSearchFilters, setBookSearchFilters] = useState<BookSearchFilters>({
         orderBy: "updated_at,desc",
         searchTerm: ""
     });
     const [books, setBooks] = useState<BookLookupItem[]>([]);
-    const [currentPage, setCurrentPage] = useState<number>(firstApiPage);
+    const [currentPage, setCurrentPage] = useState<number>(currentPageParam);
     const [totalBooks, setTotalBooks] = useState<number>(0);
     const [fileTypes, setFileTypes] = useState<Map<number, string>>(new Map());
     const [loading, setLoading] = useState<boolean>(true);
     const navigate = useNavigate();
-    const params = useParams();
 
     useEffect(() => {
-        const currentPageParam = params.page === undefined ? firstApiPage : parseInt(params.page);
         setCurrentPage(currentPageParam);
     }, [params]);
 
