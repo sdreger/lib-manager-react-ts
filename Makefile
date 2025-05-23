@@ -46,3 +46,24 @@ pact/consumer/record-deploy:
 	PACT_DO_NOT_TRACK=true SSL_CERT_FILE=${SSL_CERT_FILE} pact-broker record-deployment \
 		--pacticipant $(PACT_CONSUMER_NAME) --version ${PACT_VERSION_COMMIT} \
 		--broker-base-url $(PACT_BROKER_URL) --environment production
+
+.PHONY: pact/consumer/can-i-deploy
+pact/consumer/can-i-deploy:
+	@echo "--- ✅ Checking if we can deploy consumer"
+	PACT_DO_NOT_TRACK=true SSL_CERT_FILE=${SSL_CERT_FILE} pact-broker can-i-deploy \
+		--broker-base-url https://pact-broker.dreger.lan --pacticipant ${PACT_CONSUMER_NAME} \
+		--version ${PACT_VERSION_COMMIT} --to-environment production
+
+.PHONY: pact/consumer/describe-pacticipant
+pact/consumer/describe-pacticipant:
+	@echo "--- ✅ Describing a pacticipant"
+	PACT_DO_NOT_TRACK=true SSL_CERT_FILE=${SSL_CERT_FILE} pact-broker describe-pacticipant \
+    	--broker-base-url https://pact-broker.dreger.lan --name ${PACT_CONSUMER_NAME}
+
+.PHONY: pact/consumer/describe-pacticipant-version
+pact/consumer/describe-pacticipant-version:
+	@echo "--- ✅ Describing a pacticipant version"
+	PACT_DO_NOT_TRACK=true SSL_CERT_FILE=${SSL_CERT_FILE} pact-broker describe-version \
+    	--broker-base-url https://pact-broker.dreger.lan --pacticipant ${PACT_CONSUMER_NAME}
+
+# TODO: https://hub.docker.com/r/pactfoundation/pact-cli
