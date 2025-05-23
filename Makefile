@@ -3,9 +3,11 @@ IMAGE_REGISTRY := gitea.dreger.lan/sdreger/lib-manager-react-ts
 BUILD_REF = $(shell git rev-parse --short HEAD)
 BACKEND_API_URL := https://lib-manager-go.dreger.lan/api
 SSL_CERT_FILE := tls-dell-traefik/ca.pem
+PACT_CONSUMER_NAME = lib-manager-react-ts
 PACT_DIR := $(PWD)/pacts
-PACT_BROKER_PROTO := https
 PACT_BROKER_URL := pact-broker.dreger.lan
+PACT_VERSION_COMMIT := ${shell git describe --tags --abbrev=0}
+PACT_VERSION_BRANCH := $(shell git rev-parse --abbrev-ref HEAD)
 
 # docker/build: build the Docker image with api reverse proxy config
 .PHONY: docker/build/api-proxy
@@ -32,6 +34,15 @@ docker/run/no-api-proxy:
 
 .PHONY: pact/consumer/publish
 pact/consumer/publish:
+	@echo "--- 📝 Publishing Pacts"
 	PACT_DO_NOT_TRACK=true SSL_CERT_FILE=${SSL_CERT_FILE} pact-broker publish \
-		--broker-base-url ${PACT_BROKER_PROTO}://${PACT_BROKER_URL} \
-		${PACT_DIR} --consumer-app-version=${BUILD_REF} --auto-detect-version-properties
+		--broker-base-url ${PACT_BROKER_URL} ${PACT_DIR} \
+		--branch=${PACT_VERSION_BRANCH} --consumer-app-version=${PACT_VERSION_COMMIT} \
+		--auto-detect-version-properties
+
+.PHONY: pact/consumer/record-deploy
+pact/consumer/record-deploy:
+	@echo "--- ✅ Recording deployment of consumer"
+	PACT_DO_NOT_TRACK=true SSL_CERT_FILE=${SSL_CERT_FILE} pact-broker record-deployment \
+		--pacticipant $(PACT_CONSUMER_NAME) --version ${PACT_VERSION_COMMIT} \
+		--broker-base-url $(PACT_BROKER_URL) --environment production
