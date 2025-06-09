@@ -5,8 +5,8 @@ type SortSelectProps = {
     value: SortType;
 }
 
-export type SortType = "id,asc" | "id,desc" | "title,asc" | "title,desc" | "subtitle,asc" | "subtitle,desc" |
-    "created_at,asc" | "created_at,desc" | "updated_at,asc" | "updated_at,desc";
+export type SortType = "pub_date,asc" | "pub_date,desc" | "id,asc" | "id,desc" | "title,asc" | "title,desc" |
+    "subtitle,asc" | "subtitle,desc" | "created_at,asc" | "created_at,desc" | "updated_at,asc" | "updated_at,desc";
 
 type SortItem = {
     value: SortType;
@@ -25,6 +25,8 @@ export const SortSelect = (props: SortSelectProps) => {
         {value: "created_at,desc", label: "Created ↑"},
         {value: "updated_at,asc", label: "Updated ↓"},
         {value: "updated_at,desc", label: "Updated ↑"},
+        {value: "pub_date,asc", label: "Publication date ↓"},
+        {value: "pub_date,desc", label: "Publication date ↑"},
     ];
 
     function handleOrderChange(val: string | null) {
