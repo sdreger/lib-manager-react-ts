@@ -23,8 +23,14 @@ export class BookApi {
     }
 
 
-    async getBooks(currentPage: number, pageSize: number, sort: string, searchTerm: string): Promise<Response> {
-        const query: string = `?page=${currentPage}&size=${pageSize}&sort=${sort}&query=${searchTerm}`;
+    async getBooks(currentPage: number, pageSize: number, sort: string, searchTerm: string,
+                   publisherIds: string[]): Promise<Response> {
+        let query: string = `?page=${currentPage}&size=${pageSize}&sort=${sort}&query=${searchTerm}`;
+        if (publisherIds.length > 0) {
+            publisherIds.forEach((id: string) => {
+                query += `&publisher=${id}`
+            })
+        }
         return fetch(`${this.url}${query}`, this.createRequestOptions());
     }
 }

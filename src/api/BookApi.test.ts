@@ -63,7 +63,7 @@ describe('GET /v1/books', () => {
             const sortBy = 'updated_at,desc';
             const bookAPI = new BookApi(mockServer.url + '/v1/books');
             const query = '';
-            const response = await bookAPI.getBooks(pageNumber, pageSize, sortBy, query);
+            const response = await bookAPI.getBooks(pageNumber, pageSize, sortBy, query, []);
 
             expect(response.status).eq(200);
             // TODO: check fields
