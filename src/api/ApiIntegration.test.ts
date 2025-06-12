@@ -4,6 +4,7 @@ import {describe, expect, it} from "vitest";
 import {BookApi} from "@/api/BookApi.ts";
 import {arrayContaining, datetime} from "@pact-foundation/pact/src/v3/matchers";
 import {FileTypeApi} from "@/api/FileTypeApi.ts";
+import {PublisherApi} from "@/api/PublisherApi.ts";
 
 const {constrainedArrayLike, eachLike, integer, string, regex} = MatchersV3;
 
@@ -114,6 +115,55 @@ describe('GET /v1/file_types', () => {
             const sortBy = 'name,asc';
             const fileTypeAPI = new FileTypeApi(mockServer.url + '/v1/file_types');
             const response = await fileTypeAPI.getFileTypes(pageNumber, pageSize, sortBy);
+
+            expect(response.status).eq(200);
+            // TODO: check fields
+        });
+    })
+})
+
+const PUBLISHER_LIST_EXPECTED_BODY = {
+    "data": {
+        "page": integer(1),
+        "size": integer(2),
+        "total_pages": integer(2),
+        "total_elements": integer(4),
+        "content": arrayContaining(
+            {
+                "id": integer(1),
+                "name": string("Apress"),
+            },
+            {
+                "id": integer(2),
+                "name": string("Oreilly"),
+            },
+        )
+    }
+};
+
+describe('GET /v1/publishers', () => {
+    it('returns an HTTP 200 and a list of publishers', () => {
+        provider
+            .given('I have a list of publishers')
+            .uponReceiving('a request for a page of publishers')
+            .withRequest({
+                method: 'GET',
+                path: '/v1/publishers',
+                query: {size: '2', page: '1', sort: 'name,asc'},
+                headers: {Accept: 'application/json'},
+            })
+            .willRespondWith({
+                status: 200,
+                headers: {'Content-Type': 'application/json'},
+                body: PUBLISHER_LIST_EXPECTED_BODY,
+            });
+
+        return provider.executeTest(async (mockServer) => {
+            const pageNumber = 1;
+            const pageSize = 2;
+            const sortBy = 'name,asc';
+            const publisherApi = new PublisherApi(mockServer.url + '/v1/publishers');
+            const response = await publisherApi.getPublishers(pageNumber, pageSize, sortBy);
 
             expect(response.status).eq(200);
             // TODO: check fields
