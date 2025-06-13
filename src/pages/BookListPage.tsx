@@ -87,7 +87,8 @@ export function BookListPage() {
 
     const [bookSearchFilters, setBookSearchFilters] = useState<BookSearchFilters>({
         orderBy: "updated_at,desc",
-        searchTerm: ""
+        searchTerm: "",
+        publisherIds: [],
     });
     const [books, setBooks] = useState<BookLookupItem[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(currentPageParam);
@@ -126,9 +127,14 @@ export function BookListPage() {
 
     useEffect(() => {
         const fetchBooks =
-            async (currentPage: number, pageSize: number, sort: string, searchTerm: string): Promise<void> => {
+            async (currentPage: number, pageSize: number, filters: BookSearchFilters): Promise<void> => {
+                const {orderBy: sort, searchTerm, publisherIds} = filters;
                 try {
-                    const response: Response = await BookApi.getBooks(currentPage, pageSize, sort, searchTerm);
+                    const response: Response = await BookApi.getBooks(
+                        currentPage, pageSize,
+                        sort, searchTerm,
+                        publisherIds
+                    );
                     if (response.status >= 400) {
                         handleError("Book list fetch error", await response.json() as ApiErrorsResponse)
                         return;
@@ -148,7 +154,7 @@ export function BookListPage() {
                 }
             }
 
-        void fetchBooks(currentPage, bookListPageSize, bookSearchFilters.orderBy, bookSearchFilters.searchTerm);
+        void fetchBooks(currentPage, bookListPageSize, bookSearchFilters);
     }, [currentPage, bookSearchFilters]);
 
     function handleBookSearchFiltersChange(val: BookSearchFilters): void {
