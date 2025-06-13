@@ -1,10 +1,12 @@
-import {AppShell, Autocomplete, Divider, Skeleton} from "@mantine/core";
+import {AppShell, Autocomplete, Divider, MultiSelect, ComboboxItem} from "@mantine/core";
 import {SortSelect, SortType} from "@/components/SortSelect/SortSelect.tsx";
-import {KeyboardEvent, useState} from "react";
+import {KeyboardEvent, useEffect, useState} from "react";
+import PublisherApi from "@/api/PublisherApi.ts";
 
 export type BookSearchFilters = {
     searchTerm: string;
     orderBy: string;
+    publisherIds: string[];
 }
 
 type BookSearchNavbarProps = {
@@ -14,6 +16,16 @@ type BookSearchNavbarProps = {
 export const BookSearchNavbar = (props: BookSearchNavbarProps) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [orderByValue, setOrderByValue] = useState("updated_at,desc" as SortType);
+    const [publishersFilter, setPublishersFilter] = useState<string[]>([]);
+    const [publishersFilterValues, setPublishersFilterValues] = useState<Map<number, string>>(new Map());
+
+    useEffect(() => {
+        const fetchPublishers = async (): Promise<void> => {
+            const publishers: Map<number, string> = await PublisherApi.getAllPublishers()
+            setPublishersFilterValues(publishers);
+        };
+        void fetchPublishers();
+    }, [])
 
     function handleSearchTermChange(newSearchTerm: string) {
         setSearchTerm(newSearchTerm);
@@ -21,6 +33,7 @@ export const BookSearchNavbar = (props: BookSearchNavbarProps) => {
             props.onFiltersChange({
                 orderBy: orderByValue,
                 searchTerm: "",
+                publisherIds: publishersFilter,
             })
         }
     }
@@ -30,6 +43,7 @@ export const BookSearchNavbar = (props: BookSearchNavbarProps) => {
         props.onFiltersChange({
             orderBy: orderByValue,
             searchTerm: "",
+            publisherIds: publishersFilter,
         })
     }
 
@@ -38,6 +52,7 @@ export const BookSearchNavbar = (props: BookSearchNavbarProps) => {
             props.onFiltersChange({
                 orderBy: orderByValue,
                 searchTerm: searchTerm,
+                publisherIds: publishersFilter,
             })
         }
     }
@@ -47,7 +62,26 @@ export const BookSearchNavbar = (props: BookSearchNavbarProps) => {
         props.onFiltersChange({
             orderBy: val,
             searchTerm: searchTerm,
+            publisherIds: publishersFilter,
         })
+    }
+
+    function handlePublisherFilterChange(val: string[]) {
+        setPublishersFilter(val);
+        props.onFiltersChange({
+            orderBy: orderByValue,
+            searchTerm: searchTerm,
+            publisherIds: val,
+        })
+    }
+
+    const publishersFilterData = [] as ComboboxItem[];
+    for (const item of [...publishersFilterValues]) {
+        const obj: ComboboxItem = {} as ComboboxItem;
+        const [key, value] = item;
+        obj.value = key.toString();
+        obj.label = value;
+        publishersFilterData.push(obj);
     }
 
     return (
@@ -63,11 +97,16 @@ export const BookSearchNavbar = (props: BookSearchNavbarProps) => {
             />
             <Divider my='xs' label="Sort" labelPosition="center"/>
             <SortSelect value={orderByValue as SortType} onChange={handleOrderChange}/>
-            {Array(15)
-                .fill(0)
-                .map((_, index) => (
-                    <Skeleton key={index} h={28} mt="sm" animate={false}/>
-                ))}
+            <Divider my='xs' label="Filters" labelPosition="center"/>
+            <MultiSelect
+                clearable
+                searchable
+                label="Publishers"
+                placeholder="Select filters"
+                nothingFoundMessage="Nothing found..."
+                data={publishersFilterData}
+                onChange={handlePublisherFilterChange}
+            />
         </AppShell.Navbar>
     );
 }
