@@ -13,6 +13,18 @@ type BookSearchNavbarProps = {
     onFiltersChange: (filters: BookSearchFilters) => void;
 }
 
+const preparePublishersFilterData = (publishersFilterValues: Map<number, string>): ComboboxItem[] => {
+    const publishersFilterData = [] as ComboboxItem[];
+    for (const item of [...publishersFilterValues]) {
+        const obj: ComboboxItem = {} as ComboboxItem;
+        const [key, value] = item;
+        obj.value = key.toString();
+        obj.label = value;
+        publishersFilterData.push(obj);
+    }
+    return publishersFilterData;
+}
+
 export const BookSearchNavbar = (props: BookSearchNavbarProps) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [orderByValue, setOrderByValue] = useState("updated_at,desc" as SortType);
@@ -75,14 +87,7 @@ export const BookSearchNavbar = (props: BookSearchNavbarProps) => {
         })
     }
 
-    const publishersFilterData = [] as ComboboxItem[];
-    for (const item of [...publishersFilterValues]) {
-        const obj: ComboboxItem = {} as ComboboxItem;
-        const [key, value] = item;
-        obj.value = key.toString();
-        obj.label = value;
-        publishersFilterData.push(obj);
-    }
+    const publishersFilterData: ComboboxItem[] = preparePublishersFilterData(publishersFilterValues);
 
     return (
         <AppShell.Navbar p="md">
