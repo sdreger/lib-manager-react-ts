@@ -1,11 +1,11 @@
 import {AppShell, Center, Loader, Pagination} from "@mantine/core";
-import {notifications} from '@mantine/notifications';
 import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router";
 import {BookSearchFilters, BookSearchNavbar} from "@/components/BookSearchNavbar/BookSearchNavbar";
 import {BookList, BookListItem} from "@/components/BookList/BookList";
 import BookApi from "@/api/BookApi.ts";
 import FileTypeApi from "@/api/FileTypeApi.ts";
+import {ApiErrorsResponse, handleError} from "@/errors/errors.ts";
 
 type BookLookupItem = {
     id: number;
@@ -48,37 +48,9 @@ type FileTypesResponse = {
     data: ResponsePage<FileTypeItem>
 }
 
-type ApiErrorResponse = {
-    field: string;
-    message: string;
-}
-
-type ApiErrorsResponse = {
-    errors: ApiErrorResponse[];
-}
-
 const bookListPageSize: number = 10;
 const fileTypeListPageSize: number = 100;
 const firstApiPage: number = 1;
-
-function handleError(title: string, error: ApiErrorsResponse) {
-    const message = error.errors.map((err: ApiErrorResponse): string => {
-        return err.message
-    }).join(",")
-    console.error(message);
-    showErrorNotification(title, message);
-}
-
-function showErrorNotification(title: string, message: string): void {
-    notifications.show({
-        color: 'red',
-        message: message,
-        title: title,
-        position: "bottom-right",
-        autoClose: 5000,
-        withBorder: true
-    })
-}
 
 export function BookListPage() {
 
