@@ -33,6 +33,10 @@ export class BookApi {
         }
         return fetch(`${this.url}${query}`, this.createRequestOptions());
     }
+
+    async getBook(bookId: number): Promise<Response> {
+        return fetch(`${this.url}/${bookId}`, this.createRequestOptions());
+    }
 }
 
 export default new BookApi(bookApiUrl) as BookApi;
