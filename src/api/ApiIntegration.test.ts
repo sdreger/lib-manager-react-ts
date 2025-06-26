@@ -73,6 +73,66 @@ describe('GET /v1/books', () => {
     })
 })
 
+const BOOK_EXPECTED_BODY = {
+    "data": {
+        "id": integer(1),
+        "title": string("Azure AI Services at Scale for Cloud, Mobile, and Edge"),
+        "subtitle": string("Building Intelligent Apps with Azure Cognitive Services and Machine Learning"),
+        "description": string("Building Intelligent Apps with Azure Cognitive Services and Machine Learning..."),
+        "isbn10": string("1098108043"),
+        "isbn13": integer(9781098108045),
+        "asin": string("B01LXWQUFF"),
+        "pages": integer(228),
+        "publisher_url": string("https://www.amazon.com/dp/1098108043"),
+        "edition": integer(1),
+        "pub_date": datetime("yyyy-MM-dd'T'HH:mm:ssX", "2022-05-24T00:00:00Z"),
+        "book_file_name": string("OReilly.Azure.AI.Services.at.Scale.for.Cloud.Mobile.and.Edge.1098108043.May.2022.zip"),
+        "book_file_size": integer(55425169),
+        "cover_file_name": regex("^\\w+\\.\\w{3,4}$", "1098108043.jpg"),
+        "publisher": string("OReilly"),
+        "language": string("English"),
+        "authors": eachLike(string("Anand Raman"), 1),
+        "categories": eachLike(string("Computer Science"), 1),
+        "file_types": eachLike(string("pdf"), 1),
+        "tags": eachLike(string(), 0),
+        "created_at": datetime("yyyy-MM-dd'T'HH:mm:ssX", "2022-07-23T12:13:06.476871Z"),
+        "updated_at": datetime("yyyy-MM-dd'T'HH:mm:ssX", "2022-07-23T12:13:06.476871Z"),
+    },
+};
+
+describe('GET /v1/books/1', () => {
+    const bookId = 1;
+    it('returns an HTTP 200 and a book', () => {
+        provider
+            .given('I have a book')
+            .uponReceiving('a request for a book')
+            .withRequest({
+                method: 'GET',
+                path: `/v1/books/${bookId}`,
+                headers: {Accept: 'application/json'},
+            })
+            .willRespondWith({
+                status: 200,
+                headers: {'Content-Type': 'application/json'},
+                body: BOOK_EXPECTED_BODY,
+            });
+
+        return provider.executeTest(async (mockServer) => {
+            const bookAPI = new BookApi(mockServer.url + '/v1/books');
+            const response = await bookAPI.getBook(bookId);
+
+            expect(response.status).eq(200);
+            const json = await response.json();
+            const data = json.data;
+            expect(data).not.to.be.undefined;
+            expect(data.id).eq(bookId);
+            expect(data.title).eq(BOOK_EXPECTED_BODY.data.title.value);
+            expect(data.subtitle).eq(BOOK_EXPECTED_BODY.data.subtitle.value);
+            // TODO: check necessary fields
+        });
+    })
+})
+
 const FILE_TYPES_EXPECTED_BODY = {
     "data": {
         "page": integer(1),
