@@ -1,13 +1,5 @@
 import {notifications} from "@mantine/notifications";
-
-type ApiErrorResponse = {
-    field: string;
-    message: string;
-}
-
-export type ApiErrorsResponse = {
-    errors: ApiErrorResponse[];
-}
+import {ApiErrorResponse, ApiErrorsResponse} from "@/api/CommonApi.ts";
 
 export function handleError(title: string, error: ApiErrorsResponse): void {
     const message: string = error.errors.map((err: ApiErrorResponse): string => {
