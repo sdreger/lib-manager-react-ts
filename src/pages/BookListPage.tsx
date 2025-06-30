@@ -4,18 +4,9 @@ import {useNavigate, useParams} from "react-router";
 import {BookSearchFilters, BookSearchNavbar} from "@/components/BookSearchNavbar/BookSearchNavbar";
 import {BookList, BookListItem} from "@/components/BookList/BookList";
 import BookApi, {BookLookupItem, BookLookupResponse} from "@/api/BookApi.ts";
-import FileTypeApi from "@/api/FileTypeApi.ts";
+import FileTypeApi, {FileTypesResponse} from "@/api/FileTypeApi.ts";
 import {handleError} from "@/errors/errors.ts";
-import {ApiErrorsResponse, ResponsePage} from "@/api/CommonApi.ts";
-
-type FileTypeItem = {
-    id: number;
-    name: string;
-}
-
-type FileTypesResponse = {
-    data: ResponsePage<FileTypeItem>
-}
+import {ApiErrorsResponse} from "@/api/CommonApi.ts";
 
 const bookListPageSize: number = 10;
 const fileTypeListPageSize: number = 100;

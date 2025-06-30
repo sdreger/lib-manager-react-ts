@@ -1,4 +1,15 @@
+import {ResponsePage} from "@/api/CommonApi.ts";
+
 const fileTypeApiUrl: string = `${import.meta.env.VITE_API_URL}/v1/file_types`
+
+export type FileTypeItem = {
+    id: number;
+    name: string;
+}
+
+export type FileTypesResponse = {
+    data: ResponsePage<FileTypeItem>
+}
 
 export class FileTypeApi {
     url: string;
