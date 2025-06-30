@@ -3,45 +3,14 @@ import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router";
 import {BookSearchFilters, BookSearchNavbar} from "@/components/BookSearchNavbar/BookSearchNavbar";
 import {BookList, BookListItem} from "@/components/BookList/BookList";
-import BookApi from "@/api/BookApi.ts";
+import BookApi, {BookLookupItem, BookLookupResponse} from "@/api/BookApi.ts";
 import FileTypeApi from "@/api/FileTypeApi.ts";
-import {ApiErrorsResponse, handleError} from "@/errors/errors.ts";
-
-type BookLookupItem = {
-    id: number;
-    title: string;
-    subtitle: string;
-    isbn10: string;
-    isbn13: number;
-    asin: string;
-    pages: number;
-    edition: number;
-    pub_date: Date;
-    book_file_size: number;
-    cover_file_name: string;
-    publisher: string;
-    language: string;
-    author_ids: number[];
-    category_ids: number[];
-    file_type_ids: number[];
-    tag_ids: number[];
-}
+import {handleError} from "@/errors/errors.ts";
+import {ApiErrorsResponse, ResponsePage} from "@/api/CommonApi.ts";
 
 type FileTypeItem = {
     id: number;
     name: string;
-}
-
-type ResponsePage<T> = {
-    page: number;
-    size: number;
-    total_pages: number;
-    total_elements: number;
-    content: T[]
-}
-
-type BookLookupResponse = {
-    data: ResponsePage<BookLookupItem>
 }
 
 type FileTypesResponse = {

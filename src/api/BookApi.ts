@@ -1,4 +1,30 @@
+import {ResponsePage} from "@/api/CommonApi.ts";
+
 const bookApiUrl: string = `${import.meta.env.VITE_API_URL}/v1/books`
+
+export type BookLookupItem = {
+    id: number;
+    title: string;
+    subtitle: string;
+    isbn10: string;
+    isbn13: number;
+    asin: string;
+    pages: number;
+    edition: number;
+    pub_date: Date;
+    book_file_size: number;
+    cover_file_name: string;
+    publisher: string;
+    language: string;
+    author_ids: number[];
+    category_ids: number[];
+    file_type_ids: number[];
+    tag_ids: number[];
+}
+
+export type BookLookupResponse = {
+    data: ResponsePage<BookLookupItem>
+}
 
 export class BookApi {
     url: string;
