@@ -26,6 +26,35 @@ export type BookLookupResponse = {
     data: ResponsePage<BookLookupItem>
 }
 
+export type BookItem = {
+    id: number;
+    title: string;
+    subtitle: string;
+    description: string;
+    isbn10: string;
+    isbn13: number;
+    asin: string;
+    pages: number;
+    publisher_url: string;
+    edition: number;
+    pub_date: Date;
+    book_file_name: string;
+    book_file_size: number;
+    cover_file_name: string;
+    language: string;
+    publisher: string;
+    authors: string[];
+    categories: string[];
+    file_types: string[];
+    tags: string[];
+    created_at: Date;
+    updated_at: Date;
+}
+
+export type BookItemResponse = {
+    data: BookItem
+}
+
 export class BookApi {
     url: string;
 
