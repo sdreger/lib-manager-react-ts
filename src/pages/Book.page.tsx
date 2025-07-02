@@ -10,7 +10,7 @@ export function BookPage() {
     const [book, setBook] = useState<BookItem>({} as BookItem);
     const [loading, setLoading] = useState<boolean>(true);
 
-    useEffect(() => {
+    useEffect((): void => {
         const fetchBook = async (bookId: number): Promise<void> => {
             try {
                 const response: Response = await BookApi.getBook(bookId);
@@ -20,6 +20,9 @@ export function BookPage() {
                 }
 
                 const json: BookItemResponse = await response.json();
+                json.data.pub_date = new Date(json.data.pub_date);
+                json.data.created_at = new Date(json.data.created_at);
+                json.data.updated_at = new Date(json.data.updated_at);
                 setBook(json.data);
             } catch (err) {
                 console.error(err);
@@ -34,7 +37,7 @@ export function BookPage() {
         } else {
             console.error("Can not fetch a book with id: " + params.id);
         }
-    }, []);
+    }, [params.id]);
 
     return (
         <>
