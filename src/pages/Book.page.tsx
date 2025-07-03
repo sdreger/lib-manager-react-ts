@@ -1,5 +1,5 @@
 import {useParams} from "react-router";
-import {AppShell} from "@mantine/core";
+import {AppShell, Center, Grid, Image, Loader} from "@mantine/core";
 import {useEffect, useState} from "react";
 import BookApi, {BookItem, BookItemResponse} from "@/api/BookApi.ts";
 import {handleError} from "@/errors/errors.ts";
@@ -39,12 +39,21 @@ export function BookPage() {
         }
     }, [params.id]);
 
+    const bookCoverURL: string = loading ? "" :
+        `${import.meta.env.VITE_API_URL}/v1/covers/${book.publisher.toLowerCase()}/${book.cover_file_name}`
     return (
         <>
             <AppShell.Navbar p="md">
             </AppShell.Navbar>
             <AppShell.Main>
-                <p>BookID: {book.id}</p>
+                {loading ?
+                    <Center my="xl"><Loader color="blue"/></Center>
+                    : <Grid>
+                        <Grid.Col span={{base: 12, md: 6, lg: 5, xl: 4}}>
+                            <Image radius="md" src={bookCoverURL} h={400} w="auto" fit="contain"/>
+                        </Grid.Col>
+                    </Grid>
+                }
             </AppShell.Main>
         </>
     );
