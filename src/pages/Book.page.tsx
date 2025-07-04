@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import BookApi, {BookItem, BookItemResponse} from "@/api/BookApi.ts";
 import {handleError} from "@/errors/errors.ts";
 import {ApiErrorsResponse} from "@/api/CommonApi.ts";
+import {BookDetails} from "@/components/BookDetails/BookDetails.tsx";
 
 export function BookPage() {
     const params = useParams();
@@ -51,6 +52,9 @@ export function BookPage() {
                     : <Grid>
                         <Grid.Col span={{base: 12, md: 6, lg: 5, xl: 4}}>
                             <Image radius="md" src={bookCoverURL} h={400} w="auto" fit="contain"/>
+                        </Grid.Col>
+                        <Grid.Col span={{base: 12, md: 6, lg: 7, xl: 8}}>
+                            <BookDetails book={book}/>
                         </Grid.Col>
                     </Grid>
                 }
