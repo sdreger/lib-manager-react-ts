@@ -1,84 +1,16 @@
 import {AppShell, Center, Loader, Pagination} from "@mantine/core";
-import {notifications} from '@mantine/notifications';
 import {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router";
 import {BookSearchFilters, BookSearchNavbar} from "@/components/BookSearchNavbar/BookSearchNavbar";
 import {BookList, BookListItem} from "@/components/BookList/BookList";
-import BookApi from "@/api/BookApi.ts";
-import FileTypeApi from "@/api/FileTypeApi.ts";
-
-type BookLookupItem = {
-    id: number;
-    title: string;
-    subtitle: string;
-    isbn10: string;
-    isbn13: number;
-    asin: string;
-    pages: number;
-    edition: number;
-    pub_date: Date;
-    book_file_size: number;
-    cover_file_name: string;
-    publisher: string;
-    language: string;
-    author_ids: number[];
-    category_ids: number[];
-    file_type_ids: number[];
-    tag_ids: number[];
-}
-
-type FileTypeItem = {
-    id: number;
-    name: string;
-}
-
-type ResponsePage<T> = {
-    page: number;
-    size: number;
-    total_pages: number;
-    total_elements: number;
-    content: T[]
-}
-
-type BookLookupResponse = {
-    data: ResponsePage<BookLookupItem>
-}
-
-type FileTypesResponse = {
-    data: ResponsePage<FileTypeItem>
-}
-
-type ApiErrorResponse = {
-    field: string;
-    message: string;
-}
-
-type ApiErrorsResponse = {
-    errors: ApiErrorResponse[];
-}
+import BookApi, {BookLookupItem, BookLookupResponse} from "@/api/BookApi.ts";
+import FileTypeApi, {FileTypesResponse} from "@/api/FileTypeApi.ts";
+import {handleError} from "@/errors/errors.ts";
+import {ApiErrorsResponse} from "@/api/CommonApi.ts";
 
 const bookListPageSize: number = 10;
 const fileTypeListPageSize: number = 100;
 const firstApiPage: number = 1;
-
-function handleError(title: string, error: ApiErrorsResponse) {
-    const message = error.errors.map((err: ApiErrorResponse): string => {
-        return err.message
-    }).join(",")
-    console.error(message);
-    showErrorNotification(title, message);
-}
-
-function showErrorNotification(title: string, message: string): void {
-    notifications.show({
-        color: 'red',
-        message: message,
-        title: title,
-        position: "bottom-right",
-        autoClose: 5000,
-        withBorder: true
-    })
-}
 
 export function BookListPage() {
 

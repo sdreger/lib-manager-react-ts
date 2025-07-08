@@ -107,7 +107,7 @@ export const BookSearchNavbar = (props: BookSearchNavbarProps) => {
                 clearable
                 searchable
                 label="Publishers"
-                placeholder="Select filters"
+                placeholder="Select publihers"
                 nothingFoundMessage="Nothing found..."
                 data={publishersFilterData}
                 onChange={handlePublisherFilterChange}
