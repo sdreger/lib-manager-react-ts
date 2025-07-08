@@ -95,8 +95,8 @@ const BOOK_EXPECTED_BODY = {
         "categories": eachLike(string("Computer Science"), 1),
         "file_types": eachLike(string("pdf"), 1),
         "tags": eachLike(string(), 0),
-        "created_at": datetime("yyyy-MM-dd'T'HH:mm:ssX", "2022-07-23T12:13:06.476871Z"),
-        "updated_at": datetime("yyyy-MM-dd'T'HH:mm:ssX", "2022-07-23T12:13:06.476871Z"),
+        "created_at": datetime("yyyy-MM-dd'T'HH:mm:ss.SSSSSSX", "2022-07-23T12:13:06.476871Z"),
+        "updated_at": datetime("yyyy-MM-dd'T'HH:mm:ss.SSSSSSX", "2022-07-23T12:13:06.476871Z"),
     },
 };
 
