@@ -229,4 +229,39 @@ describe('GET /v1/publishers', () => {
             // TODO: check fields
         });
     })
+
+    describe('GET /v1/books/1/download', () => {
+        const bookId = 1;
+        const bookArchiveName = 'OReilly.Azure.AI.Services.at.Scale.for.Cloud.Mobile.and.Edge.1098108043.May.2022.zip';
+        it('returns an HTTP 200 and a book archive', () => {
+            const contentDisposition = `attachment; filename=${bookArchiveName}`;
+            provider
+                .given('I have a book archive')
+                .uponReceiving('a request for a book archive')
+                .withRequest({
+                    method: 'GET',
+                    path: `/v1/books/${bookId}/download`,
+                    headers: {Accept: 'application/octet-stream'},
+                })
+                .willRespondWith({
+                    status: 200,
+                    contentType: 'application/octet-stream',
+                    headers: {
+                        'Content-Disposition': regex('attachment; filename=\"\\S+\"', contentDisposition),
+                    }
+                });
+
+            return provider.executeTest(async (mockServer) => {
+                const headers: Headers = new Headers();
+                headers.set("Accept", 'application/octet-stream');
+                const response =
+                    await fetch(`${mockServer.url}/v1/books/${bookId}/download`, {
+                        method: "GET",
+                        headers: headers,
+                    })
+                expect(response.status).eq(200);
+                expect(response.headers.get('Content-Disposition')).eq(contentDisposition);
+            });
+        })
+    })
 })

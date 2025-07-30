@@ -1,5 +1,5 @@
 import {useParams} from "react-router";
-import {AppShell, Center, Grid, Image, Loader} from "@mantine/core";
+import {Anchor, AppShell, Center, Grid, Image, Loader} from "@mantine/core";
 import {useEffect, useState} from "react";
 import BookApi, {BookItem, BookItemResponse} from "@/api/BookApi.ts";
 import {handleError} from "@/errors/errors.ts";
@@ -41,7 +41,9 @@ export function BookPage() {
     }, [params.id]);
 
     const bookCoverURL: string = loading ? "" :
-        `${import.meta.env.VITE_API_URL}/v1/covers/${book.publisher.toLowerCase()}/${book.cover_file_name}`
+        `${import.meta.env.VITE_API_URL}/v1/covers/${book.publisher.toLowerCase()}/${book.cover_file_name}`;
+    const bookArchiveURL: string = loading ? "" :
+        `${import.meta.env.VITE_API_URL}/v1/books/${book.id}/download`;
     return (
         <>
             <AppShell.Navbar p="md">
@@ -51,7 +53,14 @@ export function BookPage() {
                     <Center my="xl"><Loader color="blue"/></Center>
                     : <Grid>
                         <Grid.Col span={{base: 12, md: 6, lg: 5, xl: 4}}>
-                            <Image radius="md" src={bookCoverURL} h={400} w="auto" fit="contain"/>
+                            <Center>
+                                <Image radius="md" src={bookCoverURL} h={400} w="auto" fit="contain"/>
+                            </Center>
+                            <Center>
+                                <Anchor variant="gradient" gradient={{from: "pink", to: "yellow"}}
+                                        fw={500} fz="lg" my="md"
+                                        href={bookArchiveURL}>Download Book Archive</Anchor>
+                            </Center>
                         </Grid.Col>
                         <Grid.Col span={{base: 12, md: 6, lg: 7, xl: 8}}>
                             <BookDetails book={book}/>
